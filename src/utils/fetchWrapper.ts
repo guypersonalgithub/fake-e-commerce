@@ -1,9 +1,6 @@
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
 
-export async function fetchWrapper<
-  T extends Record<string, unknown>,
-  B extends Record<string, unknown> = Record<string, unknown>,
->(
+export async function fetchWrapper<T, B extends Record<string, unknown> = Record<string, unknown>>(
   path: string,
   options: {
     method: Method;
