@@ -8,10 +8,39 @@ import {
 } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { fetchWrapper } from "@/utils/fetchWrapper";
+
+type Credentials = {
+  email: string;
+  username: string;
+  password: string;
+};
 
 export const Signup = () => {
+  const navigate = useNavigate();
+  const { mutate, error, isPending } = useMutation({
+    mutationFn: async (credentials: Credentials) =>
+      await fetchWrapper<{ id: number }, Credentials>("/users", {
+        method: "POST",
+        body: credentials,
+        errorMessage: "Signup failed",
+      }),
+    onSuccess: (data) => {
+      console.log(data);
+      navigate("/login");
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Credentials>();
+
   return (
     <div className="flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md space-y-8">
@@ -23,22 +52,33 @@ export const Signup = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <form className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" type="username" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="mail@example.com" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
-              </div>
-              <Button type="submit" className="w-full">
+            <form className="space-y-4" onSubmit={handleSubmit((data) => mutate(data))}>
+              <Input
+                id="username"
+                type="username"
+                {...register("username", { required: true, minLength: 6 })}
+                label="Username"
+                error={errors.username ? "Username must be at least 6 characters" : undefined}
+              />
+              <Input
+                id="email"
+                type="email"
+                placeholder="mail@example.com"
+                {...register("email", { required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ })}
+                label="Email"
+                error={errors.email ? "Must be a correct email format" : undefined}
+              />
+              <Input
+                id="password"
+                type="password"
+                {...register("password", { required: true, minLength: 6 })}
+                label="Password"
+                error={errors.password ? "Password must be at least 6 characters" : undefined}
+              />
+              <Button type="submit" className="w-full" isLoading={isPending}>
                 Sign in
               </Button>
+              <ErrorMessage error={error?.message} />
             </form>
           </CardContent>
           <CardFooter>

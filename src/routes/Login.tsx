@@ -8,10 +8,40 @@ import {
 } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { fetchWrapper } from "@/utils/fetchWrapper";
+import { useAuthStore } from "@/store";
+
+type Credentials = {
+  username: string;
+  password: string;
+};
 
 export const Login = () => {
+  const login = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
+  const { mutate, error, isPending } = useMutation({
+    mutationFn: async (credentials: Credentials) =>
+      await fetchWrapper<{ token: string }, Credentials>("/auth/login", {
+        method: "POST",
+        body: credentials,
+        errorMessage: "Login failed",
+      }),
+    onSuccess: (data, variables) => {
+      login(variables.username, data.token);
+      navigate("/");
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Credentials>();
+
   return (
     <div className="flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md space-y-8">
@@ -23,18 +53,25 @@ export const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <form className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" type="username" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
-              </div>
-              <Button type="submit" className="w-full">
+            <form className="space-y-4" onSubmit={handleSubmit((data) => mutate(data))}>
+              <Input
+                id="username"
+                type="username"
+                {...register("username", { required: true, minLength: 6 })}
+                label="Username"
+                error={errors.username ? "Username must be at least 6 characters" : undefined}
+              />
+              <Input
+                id="password"
+                type="password"
+                {...register("password", { required: true, minLength: 6 })}
+                label="Password"
+                error={errors.password ? "Password must be at least 6 characters" : undefined}
+              />
+              <Button type="submit" className="w-full" isLoading={isPending}>
                 Sign in
               </Button>
+              <ErrorMessage error={error?.message} />
             </form>
           </CardContent>
           <CardFooter>
