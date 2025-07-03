@@ -1,4 +1,4 @@
-import type { UseProductStoreProps } from "@/stores/globalStores";
+import type { UseStoreProps } from "@/stores/globalStores";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../Card";
 import { ShoppingBag, Trash2 } from "lucide-react";
 import type { Product } from "@/utils/requests";
@@ -6,8 +6,8 @@ import { Button } from "../Button";
 import { QuantityInput } from "../QuantityInput";
 import { EmptyCart } from "./EmptyCart";
 
-type ProductCartProps = Pick<UseProductStoreProps, "cartItems"> &
-  Partial<Pick<UseProductStoreProps, "updateCurrentCart" | "checkout">> & {
+type ProductCartProps = Pick<UseStoreProps, "cartItems"> &
+  Partial<Pick<UseStoreProps, "updateCurrentCart" | "checkout">> & {
     products: Product[];
   };
 

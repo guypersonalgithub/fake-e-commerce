@@ -1,40 +1,21 @@
 import { create } from "zustand";
-import { appendPurchase, clearCartItems, clearToken, clearUsername, getCartItems, getUsername, setCartItems, setToken, setUsername } from "./storeUtils";
+import {
+  appendPurchase,
+  clearCartItems,
+  clearToken,
+  clearUsername,
+  getCartItems,
+  getUsername,
+  setCartItems,
+  setToken,
+  setUsername,
+} from "./storeUtils";
 import type { CartData } from "./types";
 
-type UseAuthStoreProps = {
-  username: string | null;
-  login: (username: string, token: string) => void;
-  logout: () => void;
-  redirectToAfterLogin?: string;
-  updateRedirectToAfterLogin: (path?: string) => void;
-};
-
-export const useAuthStore = create<UseAuthStoreProps>((set) => ({
-  username: getUsername(),
-  login: (username, token) => {
-    setToken(token);
-    setUsername(username);
-    set({ username });
-  },
-  logout: () => {
-    clearToken();
-    clearUsername();
-    set({ username: null });
-  },
-  redirectToAfterLogin: undefined,
-  updateRedirectToAfterLogin: (path) => set(() => ({ redirectToAfterLogin: path })),
-}));
-
-const initializeCart = () => {
+const initializeCart = (username: string) => {
   try {
-    const localUsername = getUsername();
-    if (!localUsername) {
-      return [];
-    }
-
-    const data = getCartItems(localUsername);
-    if (!data || data.username !== localUsername) {
+    const data = getCartItems(username);
+    if (!data || data.username !== username) {
       return [];
     }
 
@@ -44,32 +25,60 @@ const initializeCart = () => {
   }
 };
 
-export type UseProductStoreProps = {
+export type UseStoreProps = {
+  // Auth
+  username: string | null;
+  login: (username: string, token: string) => void;
+  logout: () => void;
+  redirectToAfterLogin?: string;
+  updateRedirectToAfterLogin: (path?: string) => void;
+
+  // Products
   cartItems: CartData;
   updateCurrentCart: (productId: number, quantity: number) => void;
   checkout: () => void;
-  initializeCartOnLogin: () => void;
-  emptyCart: () => void;
 };
 
-export const useProductStore = create<UseProductStoreProps>((set, get) => ({
-  cartItems: initializeCart(),
+export const useStore = create<UseStoreProps>((set, get) => ({
+  // Auth
+  username: getUsername(),
+  login: (username, token) => {
+    setToken(token);
+    setUsername(username);
+    const cartItems = initializeCart(username);
+    set({ username, cartItems });
+  },
+  logout: () => {
+    clearToken();
+    clearUsername();
+    set({ username: null, cartItems: [] });
+  },
+  redirectToAfterLogin: undefined,
+  updateRedirectToAfterLogin: (path) => set(() => ({ redirectToAfterLogin: path })),
+
+  // Products
+  cartItems: (() => {
+    const { username } = get() ?? { username: getUsername() };
+    if (!username) {
+      return [];
+    }
+
+    return initializeCart(username);
+  })(),
   updateCurrentCart: (productId, quantity) => {
-    const { cartItems } = get();
-    const index = cartItems.findIndex((p) => p.productId === productId);
-
-    const username = getUsername();
-
+    const { cartItems, username } = get();
     if (!username) {
       return;
     }
+
+    const index = cartItems.findIndex((p) => p.productId === productId);
 
     let updated: CartData;
 
     if (index === -1) {
       updated = [...cartItems, { productId, quantity }];
     } else if (quantity === 0) {
-      updated = cartItems.filter((_, index) => index !== index);
+      updated = cartItems.filter((_, i) => i !== index);
     } else {
       updated = [...cartItems];
       updated[index].quantity = quantity;
@@ -79,8 +88,7 @@ export const useProductStore = create<UseProductStoreProps>((set, get) => ({
     set({ cartItems: updated });
   },
   checkout: () => {
-    const { cartItems } = get();
-    const username = getUsername();
+    const { cartItems, username } = get();
     if (!username) {
       return;
     }
@@ -89,7 +97,5 @@ export const useProductStore = create<UseProductStoreProps>((set, get) => ({
     clearCartItems(username);
     set({ cartItems: [] });
   },
-  initializeCartOnLogin: () => set(() => ({ cartItems: initializeCart() })),
-  emptyCart: () => set(() => ({ cartItems: [] })),
 }));
 

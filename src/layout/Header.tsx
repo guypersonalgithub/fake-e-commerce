@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Logo } from "./Logo";
-import { useAuthStore, useProductStore } from "@/stores/globalStores";
+import { useStore } from "@/stores/globalStores";
 import { AlreadyHaveAnAccount } from "@/components/ui/AlreadyHaveAnAccount";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import {
@@ -53,7 +53,7 @@ const ToCart = () => {
 };
 
 const ToCartBadge = () => {
-  const cartItems = useProductStore((state) => state.cartItems);
+  const cartItems = useStore((state) => state.cartItems);
   const cartItemsCount = cartItems.length;
 
   if (cartItemsCount === 0) {
@@ -68,7 +68,7 @@ const ToCartBadge = () => {
 };
 
 const UserDropdown = () => {
-  const username = useAuthStore((state) => state.username);
+  const username = useStore((state) => state.username);
 
   if (!username) {
     return <AlreadyHaveAnAccount />;
@@ -90,8 +90,7 @@ const UserDropdown = () => {
 };
 
 const UserDropdownContent = () => {
-  const logout = useAuthStore((state) => state.logout);
-  const emptyCart = useProductStore((state) => state.emptyCart);
+  const logout = useStore((state) => state.logout);
 
   return (
     <>
@@ -100,14 +99,7 @@ const UserDropdownContent = () => {
       <Link to="/purchases">
         <DropdownMenuItem>Purchases</DropdownMenuItem>
       </Link>
-      <DropdownMenuItem
-        onClick={() => {
-          logout();
-          emptyCart();
-        }}
-      >
-        Logout
-      </DropdownMenuItem>
+      <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
     </>
   );
 };

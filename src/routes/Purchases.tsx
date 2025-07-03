@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/Card";
 import { ProductCart } from "@/components/ui/productCart/ProductCart";
 import { QueryStateWrapper } from "@/components/ui/QueryStateWrapper";
-import { useAuthStore } from "@/stores/globalStores";
+import { useStore } from "@/stores/globalStores";
 import type { CachedCartItems } from "@/stores/types";
 import { GET_PRODUCTS, type Product } from "@/utils/requests";
 import { useQuery } from "@tanstack/react-query";
@@ -31,7 +31,7 @@ type PurchasesViewProps = {
 };
 
 const PurchasesView = ({ data }: PurchasesViewProps) => {
-  const username = useAuthStore((state) => state.username);
+  const username = useStore((state) => state.username);
   const userPurchases = localStorage.getItem("purchases");
 
   if (!userPurchases || !username) {

@@ -11,7 +11,7 @@ import { Button } from "../Button";
 import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/utils/requests";
 import { ProductCard } from "./ProductCard";
-import { useProductStore } from "@/stores/globalStores";
+import { useStore } from "@/stores/globalStores";
 import { useRef, type FormEvent } from "react";
 import { QuantityInput } from "../QuantityInput";
 import { Label } from "../Label";
@@ -80,8 +80,8 @@ type ProductCardFormProps = {
 };
 
 const ProductCardForm = ({ product, closeDialog }: ProductCardFormProps) => {
-  const cartItems = useProductStore((state) => state.cartItems);
-  const updateCurrentCart = useProductStore((state) => state.updateCurrentCart);
+  const cartItems = useStore((state) => state.cartItems);
+  const updateCurrentCart = useStore((state) => state.updateCurrentCart);
   const currentProduct = cartItems.find(
     (currentProduct) => currentProduct.productId === product.id,
   );

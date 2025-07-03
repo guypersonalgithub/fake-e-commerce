@@ -14,8 +14,9 @@
 
 - There is a purchases page that displays previously ordered carts, bound to the current logged in username.
 
-- The products page is filterable through the url. The categories and the modal state are synched with the URL. Ideally, instead of using react-router's hooks, a more optimized and less "render-heavy" approach would be ideal, but since its more complex, I've decided to avoid doing so during this task.
+- The products page is filterable through the url. The categories and the modal state are synched with the URL. Ideally, instead of using react-router's hooks, a more optimized and less "render-heavy" approach would be better, but since it requires a more complex solution, I've decided to avoid doing so for this task.
 
 - The products page is wrapped by a virtual list.
 
 - Since the Fake Store API doesn't offer pagination and limits support, I've just added a simulated infinite scroll - once intersecting with the bottom of the list, the same products that were previously fetched, are being added once more to the state.
+

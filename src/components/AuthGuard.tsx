@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/stores/globalStores";
+import { useStore } from "@/stores/globalStores";
 import { useEffect, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router";
 
@@ -9,8 +9,8 @@ type AuthGuardProps = {
 export const AuthGuard = ({ children }: AuthGuardProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const username = useAuthStore((state) => state.username);
-  const updateRedirectToAfterLogin = useAuthStore((state) => state.updateRedirectToAfterLogin);
+  const username = useStore((state) => state.username);
+  const updateRedirectToAfterLogin = useStore((state) => state.updateRedirectToAfterLogin);
 
   useEffect(() => {
     if (!username) {
