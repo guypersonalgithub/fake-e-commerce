@@ -1,6 +1,6 @@
 import { ProductCart } from "@/components/ui/productCart/ProductCart";
 import { Spinner } from "@/components/ui/Spinner";
-import { useProductStore } from "@/globalStores";
+import { useProductStore } from "@/stores/globalStores";
 import { GET_PRODUCTS } from "@/utils/requests";
 import { useQuery } from "@tanstack/react-query";
 

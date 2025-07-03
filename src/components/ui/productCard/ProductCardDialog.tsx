@@ -11,7 +11,7 @@ import { Button } from "../Button";
 import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/utils/requests";
 import { ProductCard } from "./ProductCard";
-import { useProductStore } from "@/globalStores";
+import { useProductStore } from "@/stores/globalStores";
 import { useProductsContext } from "@/routes/Products/useProductsContext";
 import { useRef, type FormEvent } from "react";
 import { QuantityInput } from "../QuantityInput";

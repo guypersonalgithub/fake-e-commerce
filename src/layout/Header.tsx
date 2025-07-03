@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Logo } from "./Logo";
-import { useAuthStore, useProductStore } from "@/globalStores";
+import { useAuthStore, useProductStore } from "@/stores/globalStores";
 import { AlreadyHaveAnAccount } from "@/components/ui/AlreadyHaveAnAccount";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import {

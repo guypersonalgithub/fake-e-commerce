@@ -1,7 +1,8 @@
 import { Card, CardContent } from "@/components/ui/Card";
 import { ProductCart } from "@/components/ui/productCart/ProductCart";
 import { Spinner } from "@/components/ui/Spinner";
-import { useAuthStore, type CachedCartItems } from "@/globalStores";
+import { useAuthStore } from "@/stores/globalStores";
+import type { CachedCartItems } from "@/stores/types";
 import { GET_PRODUCTS, type Product } from "@/utils/requests";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingBag } from "lucide-react";

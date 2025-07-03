@@ -1,3 +1,5 @@
+import { getToken } from "@/stores/storeUtils";
+
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
 
 export async function fetchWrapper<T, B extends Record<string, unknown> = Record<string, unknown>>(
@@ -10,7 +12,7 @@ export async function fetchWrapper<T, B extends Record<string, unknown> = Record
   },
 ) {
   const { method, body, headers = {}, errorMessage } = options;
-  const token = localStorage.getItem("token");
+  const token = getToken();
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }

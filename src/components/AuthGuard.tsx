@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/globalStores";
+import { useAuthStore } from "@/stores/globalStores";
 import { useEffect, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router";
 
@@ -18,7 +18,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
       updateRedirectToAfterLogin(fullPath);
       navigate("/login");
     }
-  }, [username, location, navigate, updateRedirectToAfterLogin]);
+  }, [username, location.pathname, location.search]);
 
   if (!username) {
     return null;
@@ -26,3 +26,4 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
 
   return children;
 };
+

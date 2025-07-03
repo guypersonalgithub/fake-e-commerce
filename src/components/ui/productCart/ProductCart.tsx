@@ -1,4 +1,4 @@
-import type { UseProductStoreProps } from "@/globalStores";
+import type { UseProductStoreProps } from "@/stores/globalStores";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../Card";
 import { ShoppingBag, Trash2 } from "lucide-react";
 import type { Product } from "@/utils/requests";
