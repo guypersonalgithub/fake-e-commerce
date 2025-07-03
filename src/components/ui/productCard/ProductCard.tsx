@@ -42,7 +42,7 @@ export const ProductCard = ({ className, product, isOrderable }: ProductCardProp
             </div>
             <span className="text-sm text-muted-foreground">({count} reviews)</span>
           </div>
-          <span className="text-2xl font-bold">${price}</span>
+          <span className="text-2xl font-bold">${price.toFixed(2)}</span>
         </div>
       </CardContent>
       {isOrderable ? (

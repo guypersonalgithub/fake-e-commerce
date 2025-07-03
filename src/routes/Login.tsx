@@ -13,7 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { fetchWrapper } from "@/utils/fetchWrapper";
-import { useAuthStore } from "@/globalStores";
+import { useAuthStore, useProductStore } from "@/globalStores";
 
 type Credentials = {
   username: string;
@@ -22,6 +22,7 @@ type Credentials = {
 
 export const Login = () => {
   const login = useAuthStore((state) => state.login);
+  const initializeCartOnLogin = useProductStore((state) => state.initializeCartOnLogin);
   const navigate = useNavigate();
   const { mutate, error, isPending } = useMutation({
     mutationFn: async (credentials: Credentials) =>
@@ -32,6 +33,7 @@ export const Login = () => {
       }),
     onSuccess: (data, variables) => {
       login(variables.username, data.token);
+      initializeCartOnLogin();
       navigate("/");
     },
   });

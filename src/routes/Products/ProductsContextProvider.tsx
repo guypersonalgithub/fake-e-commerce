@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { create } from "zustand";
 import { ProductsContext, type ProdctContextStore } from "./ProductsContext";
 import { useGetParamsOnLoad } from "@/hooks/useGetParamsOnLoad";
@@ -28,10 +28,6 @@ export const ProductsContextProvider = ({ children }: ProductsContextProviderPro
       }),
     deleteProductId: () => set(() => ({ modalProductId: undefined })),
   }));
-
-  useEffect(() => {
-    return () => store.getState().deleteProductId();
-  }, [store]);
 
   return <ProductsContext.Provider value={store}>{children}</ProductsContext.Provider>;
 };

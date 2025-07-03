@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Logo } from "./Logo";
-import { useAuthStore } from "@/globalStores";
+import { useAuthStore, useProductStore } from "@/globalStores";
 import { AlreadyHaveAnAccount } from "@/components/ui/AlreadyHaveAnAccount";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import {
@@ -11,6 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
+import { ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/badge";
 
 export const Header = () => {
   return (
@@ -29,11 +32,38 @@ export const Header = () => {
             </Link>
           </nav>
         </div>
-        <nav className="flex items-center space-x-6 text-sm">
+        <nav className="flex items-center space-x-4 text-sm">
+          <ToCart />
           <UserDropdown />
         </nav>
       </div>
     </header>
+  );
+};
+
+const ToCart = () => {
+  return (
+    <Link to="/cart">
+      <Button variant="ghost" className="relative">
+        <ToCartBadge />
+        <ShoppingCart />
+      </Button>
+    </Link>
+  );
+};
+
+const ToCartBadge = () => {
+  const cartItems = useProductStore((state) => state.cartItems);
+  const cartItemsCount = cartItems.length;
+
+  if (cartItemsCount === 0) {
+    return null;
+  }
+
+  return (
+    <Badge variant="destructive" className="rounded-full w-5 h-5 absolute -top-1 -right-1">
+      {cartItemsCount}
+    </Badge>
   );
 };
 
@@ -61,12 +91,20 @@ const UserDropdown = () => {
 
 const UserDropdownContent = () => {
   const logout = useAuthStore((state) => state.logout);
+  const emptyCart = useProductStore((state) => state.emptyCart);
 
   return (
     <>
       <DropdownMenuLabel>My Account</DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() => {
+          logout();
+          emptyCart();
+        }}
+      >
+        Logout
+      </DropdownMenuItem>
     </>
   );
 };
