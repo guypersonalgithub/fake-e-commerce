@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 
 export const Header = () => {
   return (
@@ -97,6 +97,9 @@ const UserDropdownContent = () => {
     <>
       <DropdownMenuLabel>My Account</DropdownMenuLabel>
       <DropdownMenuSeparator />
+      <Link to="/purchases">
+        <DropdownMenuItem>Purchases</DropdownMenuItem>
+      </Link>
       <DropdownMenuItem
         onClick={() => {
           logout();

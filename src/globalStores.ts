@@ -4,10 +4,12 @@ type UseAuthStoreProps = {
   username: string | null;
   login: (username: string, token: string) => void;
   logout: () => void;
+  redirectToAfterLogin?: string;
+  updateRedirectToAfterLogin: (redirectToAfterLogin?: string) => void;
 };
 
 export const useAuthStore = create<UseAuthStoreProps>((set) => ({
-  username: localStorage.getItem("username") ?? null,
+  username: localStorage.getItem("username"),
   login: (username, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("username", username);
@@ -18,16 +20,19 @@ export const useAuthStore = create<UseAuthStoreProps>((set) => ({
     localStorage.removeItem("username");
     set({ username: null });
   },
+  redirectToAfterLogin: undefined,
+  updateRedirectToAfterLogin: (redirectToAfterLogin) => set(() => ({ redirectToAfterLogin })),
 }));
 
-type CachedCartItems = {
+export type CachedCartItems = {
   username: string;
   cartItems: CartData;
 };
 
 const initializeCart = () => {
   try {
-    const cachedCartItems = localStorage.getItem("cartItems");
+    const localStorageUsername = localStorage.getItem("username");
+    const cachedCartItems = localStorage.getItem(`cartItems-${localStorageUsername}`);
     if (!cachedCartItems) {
       return [];
     }
@@ -81,7 +86,7 @@ export const useProductStore = create<UseProductStoreProps>((set) => ({
         return {};
       }
 
-      localStorage.setItem("cartItems", JSON.stringify({ username, cartItems: updatedCart }));
+      localStorage.setItem(`cartItems-${username}`, JSON.stringify({ username, cartItems: updatedCart }));
 
       return { cartItems: updatedCart };
     }),
@@ -97,7 +102,7 @@ export const useProductStore = create<UseProductStoreProps>((set) => ({
 
       checkoutCarts.push({ username, cartItems: state.cartItems });
       localStorage.setItem("purchases", JSON.stringify(checkoutCarts));
-      localStorage.removeItem("cartItems");
+      localStorage.removeItem(`cartItems-${username}`);
 
       return { cartItems: [] };
     }),

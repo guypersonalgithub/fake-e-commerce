@@ -9,7 +9,7 @@ import {
 import { Spinner } from "@/components/ui/Spinner";
 import { GET_PRODUCTS, type Product } from "@/utils/requests";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 
 export const Home = () => {
   const { data = [], isLoading, isError } = useQuery(GET_PRODUCTS);
@@ -38,8 +38,6 @@ type HomeViewProps = {
 };
 
 const HomeView = ({ data }: HomeViewProps) => {
-  const navigate = useNavigate();
-
   return (
     <div
       style={{ maxWidth: "calc(100% - 100px)" }}
@@ -57,18 +55,17 @@ const HomeView = ({ data }: HomeViewProps) => {
         <CarouselContent>
           {data.map((product, index) => (
             <CarouselItem key={index} className="basis-1/3">
-              <Card
-                className="p-1 cursor-pointer"
-                onClick={() => navigate(`/products?modal=${product.id}`)}
-              >
-                <CardContent className="flex items-center justify-center p-6">
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="w-full h-64 object-cover"
-                  />
-                </CardContent>
-              </Card>
+              <Link to={`/products?modal=${product.id}`}>
+                <Card className="p-1 cursor-pointer">
+                  <CardContent className="flex items-center justify-center p-6">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="w-full h-64 object-cover"
+                    />
+                  </CardContent>
+                </Card>
+              </Link>
             </CarouselItem>
           ))}
         </CarouselContent>

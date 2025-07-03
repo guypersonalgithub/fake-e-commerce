@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "../Dialog";
 import { Button } from "../Button";
-import { ShoppingCart } from "lucide-react"; 
+import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/utils/requests";
 import { ProductCard } from "./ProductCard";
 import { useProductStore } from "@/globalStores";

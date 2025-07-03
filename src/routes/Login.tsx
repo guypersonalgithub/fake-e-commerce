@@ -23,6 +23,7 @@ type Credentials = {
 export const Login = () => {
   const login = useAuthStore((state) => state.login);
   const initializeCartOnLogin = useProductStore((state) => state.initializeCartOnLogin);
+  const redirectToAfterLogin = useAuthStore((state) => state.redirectToAfterLogin);
   const navigate = useNavigate();
   const { mutate, error, isPending } = useMutation({
     mutationFn: async (credentials: Credentials) =>
@@ -34,7 +35,7 @@ export const Login = () => {
     onSuccess: (data, variables) => {
       login(variables.username, data.token);
       initializeCartOnLogin();
-      navigate("/");
+      navigate(redirectToAfterLogin ?? "/");
     },
   });
 

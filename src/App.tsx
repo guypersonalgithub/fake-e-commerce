@@ -7,8 +7,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Products } from "@/routes/Products/Products";
 import { Home } from "./routes/Home";
 import { Cart } from "./routes/Cart";
+import { AuthGuard } from "./components/AuthGuard";
+import { Purchases } from "./routes/Purchases";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   return (
@@ -21,8 +29,30 @@ const App = () => {
               <Route index element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/cart" element={<Cart />} />
+              <Route
+                path="/products"
+                element={
+                  <AuthGuard>
+                    <Products />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/cart"
+                element={
+                  <AuthGuard>
+                    <Cart />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/purchases"
+                element={
+                  <AuthGuard>
+                    <Purchases />
+                  </AuthGuard>
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
