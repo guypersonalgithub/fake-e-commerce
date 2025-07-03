@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Spinner } from "@/components/ui/Spinner";
-import { GET_CATEGORIES, GET_PRODUCTS } from "@/utils/requests";
+import { GET_CATEGORIES, GET_PRODUCTS, type Product } from "@/utils/requests";
 import { ProductCard } from "@/components/ui/productCard/ProductCard";
+import { useGetParamsOnLoad } from "@/hooks/useGetParamsOnLoad";
+import { useSilentQueryParams } from "@/hooks/useSilentQueryParams";
+import { ProductCardDialog } from "@/components/ui/productCard/ProductCardDialog";
+import { ProductsContextProvider } from "./ProductsContextProvider";
 
 export const Products = () => {
   const {
@@ -20,7 +24,11 @@ export const Products = () => {
   const isError = isProductsError || isCategoriesError;
 
   if (isLoading) {
-    return <Spinner />;
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
   }
 
   if (isError) {
@@ -31,9 +39,32 @@ export const Products = () => {
     );
   }
 
+  return <ProductsView productsData={productsData} categoriesData={categoriesData} />;
+};
+
+type ProductsViewProps = {
+  productsData: Product[];
+  categoriesData: Awaited<ReturnType<(typeof GET_CATEGORIES)["queryFn"]>>;
+};
+
+const ProductsView = ({ productsData, categoriesData }: ProductsViewProps) => {
+  const { category } = useGetParamsOnLoad(["category"]);
+  const defaultCategory = categoriesData.find((categoryData) => categoryData.value === category);
+  const { addQueryParamsSilently, removeQueryParamsSilently } = useSilentQueryParams();
+
   return (
-    <div>
-      <Tabs defaultValue={categoriesData[0].value} className="items-center justify-center">
+    <ProductsContextProvider>
+      <Tabs
+        defaultValue={defaultCategory?.value ?? categoriesData[0].value}
+        onValueChange={(value) => {
+          if (value === "all") {
+            return removeQueryParamsSilently(["category"]);
+          }
+
+          addQueryParamsSilently([{ key: "category", value }]);
+        }}
+        className="items-center justify-center"
+      >
         <TabsList className="border">
           {categoriesData.map((category) => {
             const { value, label } = category;
@@ -56,7 +87,8 @@ export const Products = () => {
           );
         })}
       </Tabs>
-    </div>
+      <ProductCardDialog productsData={productsData} />
+    </ProductsContextProvider>
   );
 };
 

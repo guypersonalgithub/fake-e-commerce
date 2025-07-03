@@ -8,11 +8,12 @@ import {
 } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { fetchWrapper } from "@/utils/fetchWrapper";
+import { AlreadyHaveAnAccount } from "@/components/ui/AlreadyHaveAnAccount";
 
 type Credentials = {
   email: string;
@@ -83,12 +84,7 @@ export const Signup = () => {
           </CardContent>
           <CardFooter>
             <div className="text-center text-sm text-muted-foreground w-full">
-              <div>
-                Already have an account?{" "}
-                <Link to="/login" className="text-primary hover:underline font-medium">
-                  Sign in
-                </Link>
-              </div>
+              <AlreadyHaveAnAccount />
             </div>
           </CardFooter>
         </Card>

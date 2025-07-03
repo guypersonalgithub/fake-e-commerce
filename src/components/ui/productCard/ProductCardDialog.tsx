@@ -6,17 +6,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../Dialog";
 import { Button } from "../Button";
 import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/utils/requests";
 import { ProductCard } from "./ProductCard";
 import { useForm } from "react-hook-form";
-import { useProductStore } from "@/store";
+import { useProductStore } from "@/globalStores";
 import { SelectProductAmount } from "./SelectProductAmount";
 import { options } from "./constants";
-import { useState } from "react";
+import { useProductsContext } from "@/routes/Products/useProductsContext";
 
 type OptionValues = (typeof options)[number]["value"];
 
@@ -31,32 +30,39 @@ type AddProductToCardProps =
     };
 
 type ProductCardDialogProps = {
-  product: Product;
+  productsData: Product[];
 };
 
-export const ProductCardDialog = ({ product }: ProductCardDialogProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const ProductCardDialog = ({ productsData }: ProductCardDialogProps) => {
+  const useStore = useProductsContext();
+  const isModalOpen = useStore((state) => state.isModalOpen);
+  const closeModal = useStore((state) => state.closeModal);
+  const modalProductId = useStore((state) => state.modalProductId);
+  const product = productsData.find((product) => product.id === modalProductId);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger className="flex w-full" asChild>
-        <Button className="flex-1">
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          Add to Cart
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add {product.title} to cart</DialogTitle>
-          <DialogDescription>
-            Pick your desired amount and confirm in order to add {product.title} to your cart.
-          </DialogDescription>
-        </DialogHeader>
-        <ProductCard className="max-w-max border-none shadow-none pt-6 pb-0" product={product} />
-        <DialogFooter>
-          <ProductCardForm product={product} closeDialog={() => setIsOpen(false)} />
-        </DialogFooter>
-      </DialogContent>
+    <Dialog
+      open={isModalOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          closeModal();
+        }
+      }}
+    >
+      {product ? (
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add {product.title} to cart</DialogTitle>
+            <DialogDescription>
+              Pick your desired amount and confirm in order to add {product.title} to your cart.
+            </DialogDescription>
+          </DialogHeader>
+          <ProductCard className="max-w-max border-none shadow-none pt-6 pb-0" product={product} />
+          <DialogFooter>
+            <ProductCardForm product={product} closeDialog={() => closeModal()} />
+          </DialogFooter>
+        </DialogContent>
+      ) : null}
     </Dialog>
   );
 };
@@ -92,10 +98,9 @@ const ProductCardForm = ({ product, closeDialog }: ProductCardFormProps) => {
 
   const onSubmit = (data: AddProductToCardProps) => {
     const { amount, customInputAmount } = data;
-    const { id } = product;
 
     if (amount !== "custom") {
-      updateCurrentCart(id, Number(amount));
+      updateCurrentCart(product.id, Number(amount));
       return closeDialog();
     }
 
@@ -103,7 +108,7 @@ const ProductCardForm = ({ product, closeDialog }: ProductCardFormProps) => {
       return;
     }
 
-    updateCurrentCart(id, customInputAmount);
+    updateCurrentCart(product.id, customInputAmount);
     closeDialog();
   };
 

@@ -13,7 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { fetchWrapper } from "@/utils/fetchWrapper";
-import { useAuthStore } from "@/store";
+import { useAuthStore } from "@/globalStores";
 
 type Credentials = {
   username: string;

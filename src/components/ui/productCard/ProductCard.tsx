@@ -2,8 +2,10 @@ import type { Product } from "@/utils/requests";
 import { Card, CardContent, CardFooter, CardHeader } from "../Card";
 import { Star } from "lucide-react";
 import { formatTitleCase } from "@/utils/formatTitleCase";
-import { ProductCardDialog } from "./ProductCardDialog";
+import { Button } from "../Button";
+import { ShoppingCart } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { useProductsContext } from "@/routes/Products/useProductsContext";
 
 type ProductCardProps = {
   className?: string;
@@ -12,6 +14,8 @@ type ProductCardProps = {
 };
 
 export const ProductCard = ({ className, product, isOrderable }: ProductCardProps) => {
+  const useStore = useProductsContext();
+  const setModalProductId = useStore((state) => state.setModalProductId);
   const { category, description, image, price, rating, title } = product;
   const { rate, count } = rating;
 
@@ -43,7 +47,10 @@ export const ProductCard = ({ className, product, isOrderable }: ProductCardProp
       </CardContent>
       {isOrderable ? (
         <CardFooter className="p-4 pt-0 flex gap-2">
-          <ProductCardDialog product={product} />
+          <Button className="flex-1" onClick={() => setModalProductId(product.id)}>
+            <ShoppingCart className="h-4 w-4 mr-2" />
+            Add to Cart
+          </Button>
         </CardFooter>
       ) : null}
     </Card>

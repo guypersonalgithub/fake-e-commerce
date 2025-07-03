@@ -4,7 +4,7 @@ import { NotFound } from "@/routes/NotFound";
 import { Login } from "@/routes/Login";
 import { Signup } from "@/routes/Signup";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Products } from "@/routes/Products";
+import { Products } from "@/routes/Products/Products";
 
 const queryClient = new QueryClient();
 
