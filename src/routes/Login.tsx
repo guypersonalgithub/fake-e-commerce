@@ -61,6 +61,7 @@ export const Login = () => {
                 id="username"
                 type="username"
                 {...register("username", { required: true, minLength: 6 })}
+                autoComplete="username"
                 label="Username"
                 error={errors.username ? "Username must be at least 6 characters" : undefined}
               />
@@ -68,6 +69,7 @@ export const Login = () => {
                 id="password"
                 type="password"
                 {...register("password", { required: true, minLength: 6 })}
+                autoComplete="new-password"
                 label="Password"
                 error={errors.password ? "Password must be at least 6 characters" : undefined}
               />

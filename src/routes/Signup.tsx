@@ -30,8 +30,7 @@ export const Signup = () => {
         body: credentials,
         errorMessage: "Signup failed",
       }),
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
       navigate("/login");
     },
   });
@@ -58,6 +57,7 @@ export const Signup = () => {
                 id="username"
                 type="username"
                 {...register("username", { required: true, minLength: 6 })}
+                autoComplete="username"
                 label="Username"
                 error={errors.username ? "Username must be at least 6 characters" : undefined}
               />
@@ -66,6 +66,7 @@ export const Signup = () => {
                 type="email"
                 placeholder="mail@example.com"
                 {...register("email", { required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ })}
+                autoComplete="email"
                 label="Email"
                 error={errors.email ? "Must be a correct email format" : undefined}
               />
@@ -73,6 +74,7 @@ export const Signup = () => {
                 id="password"
                 type="password"
                 {...register("password", { required: true, minLength: 6 })}
+                autoComplete="current-password"
                 label="Password"
                 error={errors.password ? "Password must be at least 6 characters" : undefined}
               />

@@ -6,7 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/Carousel";
-import { Spinner } from "@/components/ui/Spinner";
+import { QueryStateWrapper } from "@/components/ui/QueryStateWrapper";
 import { GET_PRODUCTS, type Product } from "@/utils/requests";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
@@ -14,23 +14,11 @@ import { Link } from "react-router";
 export const Home = () => {
   const { data = [], isLoading, isError } = useQuery(GET_PRODUCTS);
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex items-center justify-center">
-        Something went wrong, please refresh and try again
-      </div>
-    );
-  }
-
-  return <HomeView data={data} />;
+  return (
+    <QueryStateWrapper isLoading={isLoading} isError={isError}>
+      <HomeView data={data} />
+    </QueryStateWrapper>
+  );
 };
 
 type HomeViewProps = {
@@ -55,7 +43,7 @@ const HomeView = ({ data }: HomeViewProps) => {
         <CarouselContent>
           {data.map((product, index) => (
             <CarouselItem key={index} className="basis-1/3">
-              <Link to={`/products?modal=${product.id}`}>
+              <Link to={`/products?productId=${product.id}&isModalOpen=true`}>
                 <Card className="p-1 cursor-pointer">
                   <CardContent className="flex items-center justify-center p-6">
                     <img

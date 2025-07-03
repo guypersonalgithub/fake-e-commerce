@@ -3,13 +3,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Spinner } from "@/components/ui/Spinner";
 import { GET_CATEGORIES, GET_PRODUCTS, type Product } from "@/utils/requests";
 import { ProductCard } from "@/components/ui/productCard/ProductCard";
-import { useGetParamsOnLoad } from "@/hooks/useGetParamsOnLoad";
-import { addQueryParamsSilently, removeQueryParamsSilently } from "@/utils/silentQueryParams";
 import { ProductCardDialog } from "@/components/ui/productCard/ProductCardDialog";
-import { ProductsContextProvider } from "./ProductsContextProvider";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useMeasureItemsPerRow } from "@/hooks/useMeasureItemsPerRow";
 import { useEffect, useRef, useState, type RefObject } from "react";
+import { useSearchParams } from "react-router";
+import { QueryStateWrapper } from "@/components/ui/QueryStateWrapper";
 
 export const Products = () => {
   const {
@@ -26,23 +25,11 @@ export const Products = () => {
   const isLoading = isLoadingProducts || isLoadingCategories;
   const isError = isProductsError || isCategoriesError;
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex items-center justify-center">
-        Something went wrong, please refresh and try again
-      </div>
-    );
-  }
-
-  return <ProductsView productsData={productsData} categoriesData={categoriesData} />;
+  return (
+    <QueryStateWrapper isLoading={isLoading} isError={isError}>
+      <ProductsView productsData={productsData} categoriesData={categoriesData} />
+    </QueryStateWrapper>
+  );
 };
 
 type ProductsViewProps = {
@@ -51,19 +38,23 @@ type ProductsViewProps = {
 };
 
 export const ProductsView = ({ productsData, categoriesData }: ProductsViewProps) => {
-  const { category } = useGetParamsOnLoad(["category"]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const category = searchParams.get("category") ?? "all";
   const defaultCategory = categoriesData.find((categoryData) => categoryData.value === category);
 
   return (
-    <ProductsContextProvider>
+    <>
       <Tabs
-        defaultValue={defaultCategory?.value ?? categoriesData[0].value}
+        value={defaultCategory?.value ?? categoriesData[0].value}
         onValueChange={(value) => {
+          const params = new URLSearchParams(searchParams);
           if (value === "all") {
-            return removeQueryParamsSilently(["category"]);
+            params.delete("category");
+          } else {
+            params.set("category", value);
           }
 
-          addQueryParamsSilently([{ key: "category", value }]);
+          setSearchParams(params);
         }}
         className="items-center justify-center"
       >
@@ -80,7 +71,7 @@ export const ProductsView = ({ productsData, categoriesData }: ProductsViewProps
         <CategoriesContent productsData={productsData} categoriesData={categoriesData} />
       </Tabs>
       <ProductCardDialog productsData={productsData} />
-    </ProductsContextProvider>
+    </>
   );
 };
 

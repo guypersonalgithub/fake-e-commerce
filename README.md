@@ -1,69 +1,21 @@
-# React + TypeScript + Vite
+- I have split the homepage into two pages - instead of having products in the homepage itself, I've created a dedicated Products page.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- The homepage only has a carousel that redirects to the desired product's modal, assuming the user is logged in.
 
-Currently, two official plugins are available:
+- Both the products, cart and purchases pages are only accessible while logged in (obviously ignoring that the authentication is client sided and thus very easy to bypass).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- If not logged in, a user that tries to access them is redirected to the login page, and once they do login, they'll automatically be redirected to what they wanted to access previously.
 
-## Expanding the ESLint configuration
+- The cart is managed through a zustand store and can have its products managed from both the products and cart pages.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- The cart's data is saved in the localStorage for easy "refetching" on refresh, and is bound to usernames.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- A cart that was "checkouted" is saved under purchases.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- There is a purchases page that displays previously ordered carts, bound to the current logged in username.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- The products page is filterable through the url. The categories and the modal state are synched with the URL. Ideally, instead of using react-router's hooks, a more optimized and less "render-heavy" approach would be ideal, but since its more complex, I've decided to avoid doing so during this task.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- The products page is wrapped by a virtual list.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Since the Fake Store API doesn't offer pagination and limits support, I've just added a simulated infinite scroll - once intersecting with the bottom of the list, the same products that were previously fetched, are being added once more to the state.

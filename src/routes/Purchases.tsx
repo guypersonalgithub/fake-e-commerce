@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/Card";
 import { ProductCart } from "@/components/ui/productCart/ProductCart";
-import { Spinner } from "@/components/ui/Spinner";
+import { QueryStateWrapper } from "@/components/ui/QueryStateWrapper";
 import { useAuthStore } from "@/stores/globalStores";
 import type { CachedCartItems } from "@/stores/types";
 import { GET_PRODUCTS, type Product } from "@/utils/requests";
@@ -19,23 +19,11 @@ const getUserPurchases = (userPurchases: string, username: string) => {
 export const Purchases = () => {
   const { data = [], isLoading, isError } = useQuery(GET_PRODUCTS);
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex items-center justify-center">
-        Something went wrong, please refresh and try again
-      </div>
-    );
-  }
-
-  return <PurchasesView data={data} />;
+  return (
+    <QueryStateWrapper isLoading={isLoading} isError={isError}>
+      <PurchasesView data={data} />
+    </QueryStateWrapper>
+  );
 };
 
 type PurchasesViewProps = {

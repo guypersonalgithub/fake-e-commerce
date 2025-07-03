@@ -5,7 +5,7 @@ import { formatTitleCase } from "@/utils/formatTitleCase";
 import { Button } from "../Button";
 import { ShoppingCart } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { useProductsContext } from "@/routes/Products/useProductsContext";
+import { useSearchParams } from "react-router";
 
 type ProductCardProps = {
   className?: string;
@@ -14,8 +14,6 @@ type ProductCardProps = {
 };
 
 export const ProductCard = ({ className, product, isOrderable }: ProductCardProps) => {
-  const useStore = useProductsContext();
-  const setModalProductId = useStore((state) => state.setModalProductId);
   const { category, description, image, price, rating, title } = product;
   const { rate, count } = rating;
 
@@ -47,13 +45,33 @@ export const ProductCard = ({ className, product, isOrderable }: ProductCardProp
       </CardContent>
       {isOrderable ? (
         <CardFooter className="p-4 pt-0 flex gap-2">
-          <Button className="flex-1" onClick={() => setModalProductId(product.id)}>
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            Add to Cart
-          </Button>
+          <AddToCartButton productId={product.id} />
         </CardFooter>
       ) : null}
     </Card>
+  );
+};
+
+type AddToCartButtonProps = {
+  productId: number;
+};
+
+const AddToCartButton = ({ productId }: AddToCartButtonProps) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  return (
+    <Button
+      className="flex-1"
+      onClick={() => {
+        const params = new URLSearchParams(searchParams);
+        params.set("productId", String(productId));
+        params.set("isModalOpen", "true");
+        setSearchParams(params);
+      }}
+    >
+      <ShoppingCart className="h-4 w-4 mr-2" />
+      Add to Cart
+    </Button>
   );
 };
 

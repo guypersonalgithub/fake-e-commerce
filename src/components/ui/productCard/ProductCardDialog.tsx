@@ -12,22 +12,36 @@ import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/utils/requests";
 import { ProductCard } from "./ProductCard";
 import { useProductStore } from "@/stores/globalStores";
-import { useProductsContext } from "@/routes/Products/useProductsContext";
 import { useRef, type FormEvent } from "react";
 import { QuantityInput } from "../QuantityInput";
 import { Label } from "../Label";
+import { useSearchParams } from "react-router";
 
 type ProductCardDialogProps = {
   productsData: Product[];
 };
 
 export const ProductCardDialog = ({ productsData }: ProductCardDialogProps) => {
-  const useStore = useProductsContext();
-  const isModalOpen = useStore((state) => state.isModalOpen);
-  const closeModal = useStore((state) => state.closeModal);
-  const deleteProductId = useStore((state) => state.deleteProductId);
-  const modalProductId = useStore((state) => state.modalProductId);
-  const product = productsData.find((product) => product.id === modalProductId);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const productId = searchParams.get("productId");
+  const isModalOpen = !!searchParams.get("isModalOpen");
+  const product = productsData.find((product) => product.id === Number(productId));
+
+  if (!product) {
+    return null;
+  }
+
+  const closeModal = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("isModalOpen");
+    setSearchParams(params);
+  };
+
+  const deleteProductId = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("productId");
+    setSearchParams(params);
+  };
 
   return (
     <Dialog
@@ -38,26 +52,24 @@ export const ProductCardDialog = ({ productsData }: ProductCardDialogProps) => {
         }
       }}
     >
-      {product ? (
-        <DialogContent
-          onAnimationEnd={() => {
-            if (!isModalOpen) {
-              deleteProductId();
-            }
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle>Add {product.title} to cart</DialogTitle>
-            <DialogDescription>
-              Pick your desired amount and confirm in order to add {product.title} to your cart.
-            </DialogDescription>
-          </DialogHeader>
-          <ProductCard className="max-w-max border-none shadow-none pt-6 pb-0" product={product} />
-          <DialogFooter>
-            <ProductCardForm product={product} closeDialog={() => closeModal()} />
-          </DialogFooter>
-        </DialogContent>
-      ) : null}
+      <DialogContent
+        onAnimationEnd={() => {
+          if (!isModalOpen) {
+            deleteProductId();
+          }
+        }}
+      >
+        <DialogHeader>
+          <DialogTitle>Add {product.title} to cart</DialogTitle>
+          <DialogDescription>
+            Pick your desired amount and confirm in order to add {product.title} to your cart.
+          </DialogDescription>
+        </DialogHeader>
+        <ProductCard className="max-w-max border-none shadow-none pt-6 pb-0" product={product} />
+        <DialogFooter>
+          <ProductCardForm product={product} closeDialog={() => closeModal()} />
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 };
