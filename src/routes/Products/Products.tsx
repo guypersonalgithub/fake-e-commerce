@@ -152,7 +152,9 @@ const CategoryContent = ({
   return (
     <TabsContent value={value}>
       <CategoryTabContent productsData={products} parentRef={parentRef} itemsPerRow={itemsPerRow} />
-      <div ref={loaderRef} className="h-[100px]" />
+      <div ref={loaderRef} className="h-[100px] w-full flex justify-center items-center">
+        <Spinner />
+      </div>
     </TabsContent>
   );
 };

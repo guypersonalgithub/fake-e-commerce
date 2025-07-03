@@ -1,0 +1,25 @@
+name: Netlify Production Deployment
+env:
+  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - src/**
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Netlify CLI
+        run: npm i -g netlify-cli
+      - name: Create _redirects file
+        run: node ./ci-scripts/createCSRRedirects.js cs
+      - name: Install dependencies
+        run: npm ci
+      - name: Build application
+        run: npm run build
+      - name: Deploy
+        run: netlify deploy --prod --dir=./dist
